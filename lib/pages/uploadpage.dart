@@ -100,13 +100,28 @@ class _UploadPageState extends State<UploadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upload Test'),
+        title: Text('Upload Your Test'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Center(
+              child: Column(
+                children: [
+                  Text(
+                    'Upload your test',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Your data is secure',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
             _isProcessing
                 ? Column(
                     children: [
@@ -119,38 +134,50 @@ class _UploadPageState extends State<UploadPage> {
                     children: [
                       ElevatedButton(
                         onPressed: _pickImageFromCamera,
-                        child: Text('Take Pictures'),
+                        child: Text('Take picture'),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                       ),
                       SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: _pickFile,
-                        child: Text('Upload File'),
+                        child: Text('Upload file'),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                       ),
                     ],
                   ),
             SizedBox(height: 20),
-            Text(
-              'Pages Processed:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Input your percentage score:',
+                suffixIcon: Icon(Icons.lock),
+                border: OutlineInputBorder(),
+              ),
             ),
             SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _extractedTexts.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      'Page ${index + 1}',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      _extractedTexts[index],
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  );
-                },
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Input your target score:',
+                suffixIcon: Icon(Icons.lock),
+                border: OutlineInputBorder(),
               ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to feedback page
+                Navigator.pushNamed(context, '/feedback');
+              },
+              child: Text('Get feedback'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to progress page
+                Navigator.pushNamed(context, '/progresspage');
+              },
+              child: Text('See my progress'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
             ),
           ],
         ),
