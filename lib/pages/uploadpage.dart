@@ -11,18 +11,17 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> {
-  List<String> _extractedTexts = []; // Store text for each page
+  List<String> _extractedTexts = [];
   bool _isProcessing = false;
+  TextEditingController percentageController = TextEditingController();
+  TextEditingController targetController = TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
 
-  // Function to pick an image from the camera
   Future<void> _pickImageFromCamera() async {
     while (true) {
       final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-
       if (pickedFile == null) {
-        // User canceled or finished taking pictures
         if (_extractedTexts.isNotEmpty) {
           _storeTextsInDatabase();
         }
@@ -32,16 +31,14 @@ class _UploadPageState extends State<UploadPage> {
       setState(() {
         _isProcessing = true;
       });
-
       await _processImage(File(pickedFile.path));
     }
   }
 
-  // Function to pick an image from file picker
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png'], // Supported file types
+      allowedExtensions: ['jpg', 'jpeg', 'png'],
     );
 
     if (result != null) {
@@ -50,11 +47,10 @@ class _UploadPageState extends State<UploadPage> {
       });
 
       await _processImage(File(result.files.single.path!));
-      _storeTextsInDatabase(); // Save to database after processing
+      _storeTextsInDatabase();
     }
   }
 
-  // Function to process the image and extract text
   Future<void> _processImage(File imageFile) async {
     final textRecognizer = TextRecognizer();
     final inputImage = InputImage.fromFile(imageFile);
@@ -74,26 +70,30 @@ class _UploadPageState extends State<UploadPage> {
     }
   }
 
-  // Function to store all extracted texts in Firestore
   Future<void> _storeTextsInDatabase() async {
     final CollectionReference texts =
-        FirebaseFirestore.instance.collection('texts');
+        FirebaseFirestore.instance.collection('user_data');
 
-    for (var i = 0; i < _extractedTexts.length; i++) {
+    try {
       await texts.add({
-        'content': _extractedTexts[i],
-        'page': i + 1,
+        'extractedTexts': _extractedTexts,
+        'percentageScore': percentageController.text,
+        'targetScore': targetController.text,
         'timestamp': FieldValue.serverTimestamp(),
       });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data saved successfully!')),
+      );
+
+      setState(() {
+        _extractedTexts.clear();
+        percentageController.clear();
+        targetController.clear();
+      });
+    } catch (e) {
+      print("Error storing data: $e");
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('All pages saved to database!')),
-    );
-
-    setState(() {
-      _extractedTexts.clear(); // Clear stored texts after saving
-    });
   }
 
   @override
@@ -134,19 +134,20 @@ class _UploadPageState extends State<UploadPage> {
                     children: [
                       ElevatedButton(
                         onPressed: _pickImageFromCamera,
-                        child: Text('Take picture'),
+                        child: Text('Take picture', style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                       ),
                       SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: _pickFile,
-                        child: Text('Upload file'),
+                        child: Text('Upload file', style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                       ),
                     ],
                   ),
             SizedBox(height: 20),
             TextField(
+              controller: percentageController,
               decoration: InputDecoration(
                 labelText: 'Input your percentage score:',
                 suffixIcon: Icon(Icons.lock),
@@ -155,6 +156,7 @@ class _UploadPageState extends State<UploadPage> {
             ),
             SizedBox(height: 10),
             TextField(
+              controller: targetController,
               decoration: InputDecoration(
                 labelText: 'Input your target score:',
                 suffixIcon: Icon(Icons.lock),
@@ -164,19 +166,18 @@ class _UploadPageState extends State<UploadPage> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navigate to feedback page
+                _storeTextsInDatabase();
                 Navigator.pushNamed(context, '/feedback');
               },
-              child: Text('Get feedback'),
+              child: Text('Get feedback', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
             ),
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                // Navigate to progress page
                 Navigator.pushNamed(context, '/progresspage');
               },
-              child: Text('See my progress'),
+              child: Text('See my progress', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
             ),
           ],
