@@ -4,8 +4,8 @@ import os
 
 app = Flask(__name__)
 
-# Fetch the OpenAI API key from an environment variable
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Fetch the OpenAI API key from an environment variable check notes
+
 
 
 @app.route('/api/feedback', methods=['POST'])
