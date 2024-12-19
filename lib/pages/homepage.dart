@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart'; // Brings in Flutter Material UI Package
 import 'uploadpage.dart'; // Importing of custom screens
 import 'progresspage.dart';
+import 'feedback.dart';
 import 'loginpage.dart';
 
 class HomePage extends StatelessWidget { // Homepage class with stateless widget (doesnt change after building)
