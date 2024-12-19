@@ -1,15 +1,17 @@
 import 'dart:io';
-import 'feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 
+import 'feedback.dart';
+
 class UploadPage extends StatefulWidget {
   @override
   _UploadPageState createState() => _UploadPageState();
 }
+
 class _UploadPageState extends State<UploadPage> {
   final List<File> _images = [];
   final List<String> _extractedTexts = [];
@@ -36,7 +38,6 @@ class _UploadPageState extends State<UploadPage> {
     super.dispose();
   }
 
-  // Update Button State
   void _updateButtonState() {
     setState(() {
       _isButtonEnabled = _isValidPercentage(percentageController.text) &&
@@ -45,7 +46,6 @@ class _UploadPageState extends State<UploadPage> {
     });
   }
 
-  // Pick Image from Camera
   Future<void> _pickImageFromCamera() async {
     try {
       final pickedFile = await _picker.pickImage(
@@ -60,7 +60,6 @@ class _UploadPageState extends State<UploadPage> {
             _images.add(imageFile);
           });
           await _processImage(imageFile);
-          _updateButtonState(); // Update button state after adding an image
         }
       }
     } catch (e) {
@@ -71,7 +70,6 @@ class _UploadPageState extends State<UploadPage> {
     }
   }
 
-  // Pick Files from Storage
   Future<void> _pickFile() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -88,7 +86,6 @@ class _UploadPageState extends State<UploadPage> {
               _images.add(imageFile);
             });
             await _processImage(imageFile);
-            _updateButtonState(); // Update button state after adding an image
           }
         }
       }
@@ -100,7 +97,6 @@ class _UploadPageState extends State<UploadPage> {
     }
   }
 
-  // Process Image for Text Recognition
   Future<void> _processImage(File imageFile) async {
     setState(() => _isProcessing = true);
 
@@ -121,13 +117,11 @@ class _UploadPageState extends State<UploadPage> {
     }
   }
 
-  // Validate Percentage Input
   bool _isValidPercentage(String value) {
     final num = int.tryParse(value);
     return num != null && num >= 0 && num <= 100;
   }
 
-  // Store Data in Firestore
   Future<void> _storeTextsInDatabase() async {
     final CollectionReference texts =
         FirebaseFirestore.instance.collection('user_data');
@@ -165,9 +159,6 @@ class _UploadPageState extends State<UploadPage> {
               'Upload your test',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
-            Text('Your data is secure',
-                style: TextStyle(fontSize: 16, color: Colors.grey)),
             SizedBox(height: 20),
             _isProcessing
                 ? Column(
@@ -182,18 +173,12 @@ class _UploadPageState extends State<UploadPage> {
                     children: [
                       ElevatedButton(
                         onPressed: _pickImageFromCamera,
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black),
-                        child: Text('Take Picture',
-                            style: TextStyle(color: Colors.white)),
+                        child: Text('Take Picture'),
                       ),
                       SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: _pickFile,
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black),
-                        child: Text('Upload Files',
-                            style: TextStyle(color: Colors.white)),
+                        child: Text('Upload Files'),
                       ),
                     ],
                   ),
@@ -219,7 +204,6 @@ class _UploadPageState extends State<UploadPage> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Input your percentage score:',
-                border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 10),
@@ -228,7 +212,6 @@ class _UploadPageState extends State<UploadPage> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Input your target score:',
-                border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 20),
@@ -248,9 +231,7 @@ class _UploadPageState extends State<UploadPage> {
                       );
                     }
                   : null,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-              child: Text('Get Feedback',
-                  style: TextStyle(color: Colors.white)),
+              child: Text('Get Feedback'),
             ),
           ],
         ),

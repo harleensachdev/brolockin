@@ -5,7 +5,8 @@ import os
 app = Flask(__name__)
 
 # Fetch the OpenAI API key from an environment variable
-openai.api_key = os.getenv("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")
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 @app.route('/api/feedback', methods=['POST'])
 def generate_feedback():
